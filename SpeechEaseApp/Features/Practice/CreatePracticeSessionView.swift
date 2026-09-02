@@ -9,6 +9,7 @@ struct CreatePracticeSessionView: View {
 
     @FocusState private var isNameFocused: Bool
     @FocusState private var isTimeLimitFocused: Bool
+    @State private var showIconPicker = false
     
     init(sessionToEdit: PracticeSession? = nil, onSave: @escaping (PracticeSession) -> Void) {
         self._viewModel = StateObject(wrappedValue: CreateSessionViewModel(sessionToEdit: sessionToEdit))
@@ -98,6 +99,9 @@ struct CreatePracticeSessionView: View {
                     break
                 }
             }
+            .sheet(isPresented: $showIconPicker) {
+                IconPickerView(selectedIcon: $viewModel.selectedIcon)
+            }
         }
         .onAppear {
             if !isEditing {
@@ -112,7 +116,7 @@ struct CreatePracticeSessionView: View {
                 .font(.title2)
                 .fontWeight(.bold)
                 .padding(.top)
-            
+
             TextField("Session Name (e.g., Morning Warmup)", text: $viewModel.sessionName)
                 .focused($isNameFocused)
                 .padding()
@@ -120,16 +124,16 @@ struct CreatePracticeSessionView: View {
                 .cornerRadius(12)
                 .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
                 .padding(.horizontal)
-            
+
             Text("Choose a theme color")
                 .font(.headline)
-            
+
             ColorPicker("Custom Color", selection: $viewModel.selectedColor)
                 .padding()
                 .background(Color.adaptiveCardBackground)
                 .cornerRadius(12)
                 .padding(.horizontal)
-            
+
             Button(action: {
                 viewModel.randomizeColor()
             }) {
@@ -139,7 +143,41 @@ struct CreatePracticeSessionView: View {
                 }
                 .font(.subheadline)
             }
-            
+
+            // Icon picker row
+            Button(action: { showIconPicker = true }) {
+                HStack {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(viewModel.selectedColor.opacity(0.15))
+                            .frame(width: 44, height: 44)
+                        Image(systemName: viewModel.selectedIcon ?? "square.grid.2x2.fill")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundStyle(viewModel.selectedColor)
+                    }
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Session Icon")
+                            .font(.body)
+                            .fontWeight(.medium)
+                            .foregroundStyle(.primary)
+                        Text(viewModel.selectedIcon != nil ? "Custom icon selected" : "Using default icon")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding()
+                .background(Color.adaptiveCardBackground)
+                .cornerRadius(12)
+            }
+            .padding(.horizontal)
+
             Spacer()
         }
     }

@@ -8,84 +8,67 @@ import SwiftUI
 struct MetricsHeaderView: View {
     @ObservedObject var manager = LearningManager.shared
     var onRefillHearts: () -> Void
-    
+
     var body: some View {
-        HStack {
-            // Left: Speech Level (Static, no dropdown chevron or capsule background)
-            HStack(spacing: 6) {
-                Image("speech_level")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                
-                Text("Lvl \(currentSpeechLevel)")
-                    .font(.system(.body, design: .rounded, weight: .black))
-                    .foregroundColor(.white)
-            }
-            
+        HStack(spacing: 10) {
+            // Level
+            StatPill(icon: "graduationcap.fill", value: "Lvl \(currentSpeechLevel)", color: .yellow)
+
             Spacer()
-            
+
             // Streak
-            HStack(spacing: 5) {
-                Image("streak")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 28, height: 28)
-                
-                Text("\(manager.streakCount)")
-                    .font(.system(.body, design: .rounded, weight: .black))
-                    .foregroundColor(.white)
-            }
-            
+            StatPill(icon: "flame.fill", value: "\(manager.streakCount)", color: .orange)
+
             Spacer()
-            
+
             // Gems
-            HStack(spacing: 5) {
-                Image("gem")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 28, height: 28)
-                
-                Text("\(manager.gems)")
-                    .font(.system(.body, design: .rounded, weight: .black))
-                    .foregroundColor(.white)
-            }
-            
+            StatPill(icon: "diamond.fill", value: "\(manager.gems)", color: Color(red: 0.4, green: 0.85, blue: 1.0))
+
             Spacer()
-            
-            // Hearts (interactive button to refill)
+
+            // Hearts
             Button(action: onRefillHearts) {
-                HStack(spacing: 5) {
-                    Image("heart")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 28, height: 28)
-                    
-                    Text("\(manager.hearts)")
-                        .font(.system(.body, design: .rounded, weight: .black))
-                        .foregroundColor(.white)
-                }
+                StatPill(icon: "heart.fill", value: "\(manager.hearts)", color: Color(red: 1.0, green: 0.35, blue: 0.45))
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 20)
         .padding(.vertical, 8)
-        .frame(height: 56)
+        .frame(height: 52)
     }
-    
-    // Calculate custom speech level based on crowns
+
     private var currentSpeechLevel: Int {
-        return totalCrowns + 3 // Starting from Level 3
+        totalCrowns + 3
     }
-    
+
     private var totalCrowns: Int {
         var count = 0
         for topic in TopicType.allCases {
-            if manager.isTopicCompleted(for: topic) {
-                count += 1
-            }
+            if manager.isTopicCompleted(for: topic) { count += 1 }
         }
         return count
+    }
+}
+
+private struct StatPill: View {
+    let icon: String
+    let value: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 5) {
+            Image(systemName: icon)
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(color)
+                .shadow(color: color.opacity(0.6), radius: 4, x: 0, y: 1)
+
+            Text(value)
+                .font(.system(.subheadline, design: .rounded, weight: .bold))
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, 11)
+        .padding(.vertical, 6)
+        .background(.white.opacity(0.15), in: Capsule())
     }
 }
 

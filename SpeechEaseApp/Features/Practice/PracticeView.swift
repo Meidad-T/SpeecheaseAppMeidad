@@ -262,12 +262,12 @@ struct PracticeView: View {
 struct SessionCard: View {
     let session: PracticeSession
     @Environment(\.horizontalSizeClass) var sizeClass
-    
+
     var body: some View {
         let isIPad = sizeClass == .regular
-        let primaryFocus = session.foci.first ?? .vocal 
-        let displayIcon = session.foci.count > 1 ? "square.grid.2x2.fill" : primaryFocus.icon
-        
+        let primaryFocus = session.foci.first ?? .vocal
+        let displayIcon = session.customIcon ?? (session.foci.count > 1 ? "square.grid.2x2.fill" : primaryFocus.icon)
+
         ZStack {
             GeometryReader { proxy in
                 Image(systemName: displayIcon)
@@ -277,39 +277,49 @@ struct SessionCard: View {
                     .offset(x: proxy.size.width * 0.6, y: proxy.size.height * 0.2)
             }
             .clipped()
-            
+
             HStack(spacing: 20) {
                 Image(systemName: displayIcon)
-                    .font(.system(size: isIPad ? 48 : 32)) 
+                    .font(.system(size: isIPad ? 48 : 32))
                     .foregroundColor(.white)
                     .padding(.leading, 10)
                     .frame(width: isIPad ? 80 : 50)
-                
+
                 VStack(alignment: .leading, spacing: isIPad ? 12 : 6) {
                     Text(session.name)
                         .font(isIPad ? .title : .title3)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
                         .lineLimit(2)
-                    
-                    HStack(spacing: 12) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "target")
-                                .font(.caption2)
-                            
-                            if session.foci.count > 1 {
-                                Text("Mixed (\(session.foci.count))")
+
+                    // Focus indicator row
+                    HStack(spacing: 8) {
+                        if session.foci.count > 1 {
+                            // Show tiny icons for each focus
+                            HStack(spacing: 4) {
+                                ForEach(session.foci.prefix(5)) { focus in
+                                    Image(systemName: focus.icon)
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundColor(.white.opacity(0.9))
+                                }
+                                if session.foci.count > 5 {
+                                    Text("+\(session.foci.count - 5)")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundColor(.white.opacity(0.7))
+                                }
+                            }
+                        } else {
+                            HStack(spacing: 4) {
+                                Image(systemName: "target")
                                     .font(.caption2)
-                                    .fontWeight(.medium)
-                                    .lineLimit(1)
-                            } else {
                                 Text(primaryFocus.title)
                                     .font(.caption2)
                                     .fontWeight(.medium)
                                     .lineLimit(1)
                             }
+                            .foregroundColor(.white.opacity(0.9))
                         }
-                        
+
                         if let limit = session.timeLimitMinutes {
                             HStack(spacing: 4) {
                                 Image(systemName: "timer")
@@ -318,16 +328,16 @@ struct SessionCard: View {
                                     .font(.caption2)
                                     .fontWeight(.medium)
                             }
+                            .foregroundColor(.white.opacity(0.9))
                         }
                     }
-                    .foregroundColor(.white.opacity(0.9))
-                    
+
                     if let date = session.createdDate {
                         Text("Created " + date.formatted(date: .abbreviated, time: .omitted))
                             .font(.caption)
                             .foregroundColor(.white.opacity(0.7))
                     }
-                    
+
                     if session.enforceTimeLimit {
                         Text("Strict Mode")
                             .font(.caption2)
@@ -335,9 +345,9 @@ struct SessionCard: View {
                             .foregroundColor(.white.opacity(0.7))
                     }
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
                     .foregroundColor(.white.opacity(0.5))
                     .padding(.trailing)

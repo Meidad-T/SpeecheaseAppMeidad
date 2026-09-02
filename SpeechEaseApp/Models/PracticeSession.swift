@@ -191,6 +191,7 @@ struct PracticeSession: Identifiable, Codable {
     var name: String
     private var _focus: PracticeFocus?
     var foci: [PracticeFocus]
+    var customIcon: String?   // SF Symbol name chosen by the user
     
     var focus: PracticeFocus {
         get { foci.first ?? .vocal }
@@ -216,16 +217,17 @@ struct PracticeSession: Identifiable, Codable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case id, name, focus, foci, timeLimitMinutes, enforceTimeLimit, customColor, createdDate, recordingFileName, speechReport, practiceLog, history
+        case id, name, focus, foci, customIcon, timeLimitMinutes, enforceTimeLimit, customColor, createdDate, recordingFileName, speechReport, practiceLog, history
     }
     
-    init(id: UUID = UUID(), name: String, foci: [PracticeFocus], timeLimitMinutes: Int?, enforceTimeLimit: Bool, customColor: SavedColor?, createdDate: Date? = Date(), recordingFileName: String? = nil, speechReport: SpeechReport? = nil, practiceLog: [Date] = [], history: [PracticeAttempt] = []) {
+    init(id: UUID = UUID(), name: String, foci: [PracticeFocus], timeLimitMinutes: Int?, enforceTimeLimit: Bool, customColor: SavedColor?, customIcon: String? = nil, createdDate: Date? = Date(), recordingFileName: String? = nil, speechReport: SpeechReport? = nil, practiceLog: [Date] = [], history: [PracticeAttempt] = []) {
         self.id = id
         self.name = name
         self.foci = foci
         self.timeLimitMinutes = timeLimitMinutes
         self.enforceTimeLimit = enforceTimeLimit
         self.customColor = customColor
+        self.customIcon = customIcon
         self.createdDate = createdDate
         self.recordingFileName = recordingFileName
         self.speechReport = speechReport
@@ -244,6 +246,7 @@ struct PracticeSession: Identifiable, Codable {
         timeLimitMinutes = try container.decodeIfPresent(Int.self, forKey: .timeLimitMinutes)
         enforceTimeLimit = try container.decode(Bool.self, forKey: .enforceTimeLimit)
         customColor = try container.decodeIfPresent(SavedColor.self, forKey: .customColor)
+        customIcon = try container.decodeIfPresent(String.self, forKey: .customIcon)
         createdDate = try container.decodeIfPresent(Date.self, forKey: .createdDate)
         
         recordingFileName = try container.decodeIfPresent(String.self, forKey: .recordingFileName)
@@ -272,6 +275,7 @@ struct PracticeSession: Identifiable, Codable {
         try container.encode(timeLimitMinutes, forKey: .timeLimitMinutes)
         try container.encode(enforceTimeLimit, forKey: .enforceTimeLimit)
         try container.encode(customColor, forKey: .customColor)
+        try container.encodeIfPresent(customIcon, forKey: .customIcon)
         try container.encode(createdDate, forKey: .createdDate)
         try container.encode(recordingFileName, forKey: .recordingFileName)
         try container.encode(speechReport, forKey: .speechReport)

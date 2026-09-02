@@ -14,6 +14,7 @@ class CreateSessionViewModel: ObservableObject {
     @Published var selectedFoci: Set<PracticeFocus> = []
     @Published var timeLimitText: String = ""
     @Published var enforceTimeLimit: Bool = false
+    @Published var selectedIcon: String? = nil
     
     @Published var createdSession: PracticeSession? = nil
     
@@ -23,14 +24,14 @@ class CreateSessionViewModel: ObservableObject {
         if let session = sessionToEdit {
             self.sessionName = session.name
             self.selectedFoci = Set(session.foci)
-            self.selectedColor = session.displayColor 
-            
+            self.selectedColor = session.displayColor
+            self.selectedIcon = session.customIcon
             if let limit = session.timeLimitMinutes {
                 self.timeLimitText = String(limit)
             }
             self.enforceTimeLimit = session.enforceTimeLimit
             self.editingSessionId = session.id
-        } 
+        }
     }
     
     var isDetailsValid: Bool {
@@ -103,7 +104,8 @@ class CreateSessionViewModel: ObservableObject {
             foci: sortedFoci,
             timeLimitMinutes: limit,
             enforceTimeLimit: enforceTimeLimit,
-            customColor: color
+            customColor: color,
+            customIcon: selectedIcon
         )
         
         if let id = editingSessionId {
