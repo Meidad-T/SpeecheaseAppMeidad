@@ -14,6 +14,9 @@ struct ContentView: View {
     
     @State private var showHeartsRefill = false
 
+    // The specific brand orange #FC7C19
+    private static let brandOrange = Color(red: 252/255, green: 124/255, blue: 25/255)
+
     var body: some View {
         VStack(spacing: 0) {
             // Global uniform top bar
@@ -22,13 +25,13 @@ struct ContentView: View {
                     showHeartsRefill = true
                 }
             )
-            .background(Color("AccentColor").ignoresSafeArea(edges: .top))
-            
-            // Little dark line separator (AccentColor but darker)
+            .background(Self.brandOrange.ignoresSafeArea(edges: .top))
+
+            // Separator
             Rectangle()
                 .frame(height: 1)
-                .foregroundColor(Color("AccentColor"))
-                .overlay(Color.black.opacity(0.25))
+                .foregroundColor(Self.brandOrange)
+                .overlay(Color.black.opacity(0.3))
             
             TabView(selection: $selectedTab) {
 

@@ -10,25 +10,25 @@ struct MetricsHeaderView: View {
     var onRefillHearts: () -> Void
 
     var body: some View {
-        HStack(spacing: 10) {
-            // Level
-            StatPill(icon: "graduationcap.fill", value: "Lvl \(currentSpeechLevel)", color: .yellow)
+        HStack(spacing: 6) {
+            // Level — short label, star icon doesn't clash with background
+            StatPill(icon: "star.fill", value: "\(currentSpeechLevel)", color: Color(red: 1.0, green: 0.88, blue: 0.2))
 
             Spacer()
 
-            // Streak
-            StatPill(icon: "flame.fill", value: "\(manager.streakCount)", color: .orange)
+            // Streak — white flame outline so it pops on the orange bg
+            StatPill(icon: "flame.fill", value: "\(manager.streakCount)", color: .white)
 
             Spacer()
 
             // Gems
-            StatPill(icon: "diamond.fill", value: "\(manager.gems)", color: Color(red: 0.4, green: 0.85, blue: 1.0))
+            StatPill(icon: "diamond.fill", value: "\(manager.gems)", color: Color(red: 0.45, green: 0.9, blue: 1.0))
 
             Spacer()
 
             // Hearts
             Button(action: onRefillHearts) {
-                StatPill(icon: "heart.fill", value: "\(manager.hearts)", color: Color(red: 1.0, green: 0.35, blue: 0.45))
+                StatPill(icon: "heart.fill", value: "\(manager.hearts)", color: Color(red: 1.0, green: 0.35, blue: 0.55))
             }
             .buttonStyle(.plain)
         }

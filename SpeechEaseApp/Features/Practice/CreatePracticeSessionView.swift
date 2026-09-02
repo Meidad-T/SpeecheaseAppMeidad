@@ -84,6 +84,21 @@ struct CreatePracticeSessionView: View {
                         dismiss()
                     }
                 }
+                // Quick-save button when editing — skip navigating all steps
+                if isEditing && viewModel.isDetailsValid && viewModel.isFocusValid {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button {
+                            viewModel.finishCreation()
+                            if let session = viewModel.createdSession {
+                                onSave(session)
+                                dismiss()
+                            }
+                        } label: {
+                            Image(systemName: "checkmark")
+                                .fontWeight(.bold)
+                        }
+                    }
+                }
             }
             .background(Color(UIColor.systemGroupedBackground))
             .onChange(of: viewModel.currentStep) { _, newStep in
