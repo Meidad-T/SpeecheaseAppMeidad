@@ -1,0 +1,852 @@
+[
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/2.4 2.m4a",
+    "features": {
+      "wpm": 88.92,
+      "filler_ratio": 0.1071,
+      "unique_ratio": 0.5714,
+      "complex_ratio": 0.0774,
+      "rms_energy": 0.043857,
+      "energy_variance": 0.00144839,
+      "pause_ratio": 0.3117,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0119,
+      "sentence_count": 2,
+      "avg_sentence_len": 84.0,
+      "duration_seconds": 113.37
+    },
+    "scores": {
+      "overall_score": 20.0,
+      "pacing_score": 35.0,
+      "vocabulary_score": 20.0,
+      "tone_score": 2.0,
+      "engagement_score": 5.0,
+      "pause_score": 5.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/8.5.m4a",
+    "features": {
+      "wpm": 158.72,
+      "filler_ratio": 0.0314,
+      "unique_ratio": 0.3224,
+      "complex_ratio": 0.167,
+      "rms_energy": 0.068261,
+      "energy_variance": 0.00255637,
+      "pause_ratio": 0.2082,
+      "bad_pause_ratio": 0.0483,
+      "stutter_ratio": 0.0015,
+      "sentence_count": 3,
+      "avg_sentence_len": 457.0,
+      "duration_seconds": 518.27
+    },
+    "scores": {
+      "overall_score": 80.0,
+      "pacing_score": 75.0,
+      "vocabulary_score": 75.0,
+      "tone_score": 79.0,
+      "engagement_score": 70.0,
+      "pause_score": 69.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Bad-pacing.m4a",
+    "features": {
+      "wpm": 199.51,
+      "filler_ratio": 0.1047,
+      "unique_ratio": 0.4341,
+      "complex_ratio": 0.1124,
+      "rms_energy": 0.06337,
+      "energy_variance": 0.00119017,
+      "pause_ratio": 0.0863,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0504,
+      "sentence_count": 1,
+      "avg_sentence_len": 258.0,
+      "duration_seconds": 77.59
+    },
+    "scores": {
+      "overall_score": 40.0,
+      "pacing_score": 0.0,
+      "vocabulary_score": 10.0,
+      "tone_score": 5.0,
+      "engagement_score": 10.0,
+      "pause_score": 0.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/mom-bad.ogg",
+    "features": {
+      "wpm": 48.31,
+      "filler_ratio": 0.0794,
+      "unique_ratio": 0.4635,
+      "complex_ratio": 0.1714,
+      "rms_energy": 0.099114,
+      "energy_variance": 0.0102012,
+      "pause_ratio": 0.3369,
+      "bad_pause_ratio": 0.0161,
+      "stutter_ratio": 0.0698,
+      "sentence_count": 7,
+      "avg_sentence_len": 45.0,
+      "duration_seconds": 391.23
+    },
+    "scores": {
+      "overall_score": 20.0,
+      "pacing_score": 50.0,
+      "vocabulary_score": 10.0,
+      "tone_score": 3.0,
+      "engagement_score": 1.0,
+      "pause_score": 1.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/mom-good.ogg",
+    "features": {
+      "wpm": 93.0,
+      "filler_ratio": 0.0463,
+      "unique_ratio": 0.5309,
+      "complex_ratio": 0.179,
+      "rms_energy": 0.100541,
+      "energy_variance": 0.01096284,
+      "pause_ratio": 0.3337,
+      "bad_pause_ratio": 0.0256,
+      "stutter_ratio": 0.0,
+      "sentence_count": 2,
+      "avg_sentence_len": 162.0,
+      "duration_seconds": 209.03
+    },
+    "scores": {
+      "overall_score": 89.0,
+      "pacing_score": 95.0,
+      "vocabulary_score": 89.0,
+      "tone_score": 94.0,
+      "engagement_score": 89.0,
+      "pause_score": 80.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/paz-bad.ogg",
+    "features": {
+      "wpm": 126.35,
+      "filler_ratio": 0.0486,
+      "unique_ratio": 0.6032,
+      "complex_ratio": 0.2024,
+      "rms_energy": 0.094128,
+      "energy_variance": 0.00626931,
+      "pause_ratio": 0.2123,
+      "bad_pause_ratio": 0.0625,
+      "stutter_ratio": 0.0,
+      "sentence_count": 2,
+      "avg_sentence_len": 123.5,
+      "duration_seconds": 117.29
+    },
+    "scores": {
+      "overall_score": 66.0,
+      "pacing_score": 56.0,
+      "vocabulary_score": 43.0,
+      "tone_score": 84.0,
+      "engagement_score": 21.0,
+      "pause_score": 14.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/paz-good.ogg",
+    "features": {
+      "wpm": 140.1,
+      "filler_ratio": 0.0,
+      "unique_ratio": 0.6453,
+      "complex_ratio": 0.2521,
+      "rms_energy": 0.087568,
+      "energy_variance": 0.00633849,
+      "pause_ratio": 0.2449,
+      "bad_pause_ratio": 0.0323,
+      "stutter_ratio": 0.0,
+      "sentence_count": 2,
+      "avg_sentence_len": 117.0,
+      "duration_seconds": 100.21
+    },
+    "scores": {
+      "overall_score": 92.0,
+      "pacing_score": 87.0,
+      "vocabulary_score": 97.0,
+      "tone_score": 89.0,
+      "engagement_score": 93.0,
+      "pause_score": 78.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/yaara-bad.ogg",
+    "features": {
+      "wpm": 66.85,
+      "filler_ratio": 0.0976,
+      "unique_ratio": 0.4817,
+      "complex_ratio": 0.1098,
+      "rms_energy": 0.078995,
+      "energy_variance": 0.00891553,
+      "pause_ratio": 0.4293,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 164.0,
+      "duration_seconds": 147.19
+    },
+    "scores": {
+      "overall_score": 12.0,
+      "pacing_score": 17.0,
+      "vocabulary_score": 10.0,
+      "tone_score": 5.0,
+      "engagement_score": 1.0,
+      "pause_score": 2.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/yaara-good.ogg",
+    "features": {
+      "wpm": 129.47,
+      "filler_ratio": 0.0752,
+      "unique_ratio": 0.4771,
+      "complex_ratio": 0.1405,
+      "rms_energy": 0.09623,
+      "energy_variance": 0.00600516,
+      "pause_ratio": 0.2002,
+      "bad_pause_ratio": 0.6667,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 306.0,
+      "duration_seconds": 141.81
+    },
+    "scores": {
+      "overall_score": 69.0,
+      "pacing_score": 40.0,
+      "vocabulary_score": 33.0,
+      "tone_score": 14.0,
+      "engagement_score": 15.0,
+      "pause_score": 21.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Apple Park.m4a",
+    "features": {
+      "wpm": 64.08,
+      "filler_ratio": 0.0,
+      "unique_ratio": 0.6545,
+      "complex_ratio": 0.0364,
+      "rms_energy": 0.048287,
+      "energy_variance": 0.00158258,
+      "pause_ratio": 0.2039,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0545,
+      "sentence_count": 1,
+      "avg_sentence_len": 55.0,
+      "duration_seconds": 51.5
+    },
+    "scores": {
+      "overall_score": 0.0,
+      "pacing_score": 1.0,
+      "vocabulary_score": 5.0,
+      "tone_score": 0.0,
+      "engagement_score": 0.0,
+      "pause_score": 0.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/GREAT-marie.mp3",
+    "features": {
+      "wpm": 211.49,
+      "filler_ratio": 0.0751,
+      "unique_ratio": 0.3994,
+      "complex_ratio": 0.1303,
+      "rms_energy": 0.059933,
+      "energy_variance": 0.00106809,
+      "pause_ratio": 0.1176,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0014,
+      "sentence_count": 1,
+      "avg_sentence_len": 706.0,
+      "duration_seconds": 200.3
+    },
+    "scores": {
+      "overall_score": 100.0,
+      "pacing_score": 100.0,
+      "vocabulary_score": 100.0,
+      "tone_score": 100.0,
+      "engagement_score": 100.0,
+      "pause_score": 100.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/boaring.mp3",
+    "features": {
+      "wpm": 91.97,
+      "filler_ratio": 0.0735,
+      "unique_ratio": 0.5515,
+      "complex_ratio": 0.1544,
+      "rms_energy": 0.089524,
+      "energy_variance": 0.00702664,
+      "pause_ratio": 0.1639,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 136.0,
+      "duration_seconds": 88.72
+    },
+    "scores": {
+      "overall_score": 10.0,
+      "pacing_score": 35.0,
+      "vocabulary_score": 8.0,
+      "tone_score": 0.0,
+      "engagement_score": 3.0,
+      "pause_score": 5.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/old_1.mp3",
+    "features": {
+      "wpm": 76.64,
+      "filler_ratio": 0.0244,
+      "unique_ratio": 0.5648,
+      "complex_ratio": 0.154,
+      "rms_energy": 0.264903,
+      "energy_variance": 0.00475751,
+      "pause_ratio": 0.01,
+      "bad_pause_ratio": 0.1304,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 409.0,
+      "duration_seconds": 320.21
+    },
+    "scores": {
+      "overall_score": 85.0,
+      "pacing_score": 60.0,
+      "vocabulary_score": 70.0,
+      "tone_score": 89.0,
+      "engagement_score": 74.0,
+      "pause_score": 100.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/old_2.mp3",
+    "features": {
+      "wpm": 137.55,
+      "filler_ratio": 0.0238,
+      "unique_ratio": 0.5024,
+      "complex_ratio": 0.1762,
+      "rms_energy": 0.060044,
+      "energy_variance": 0.0004836,
+      "pause_ratio": 0.042,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 420.0,
+      "duration_seconds": 183.21
+    },
+    "scores": {
+      "overall_score": 95.0,
+      "pacing_score": 100.0,
+      "vocabulary_score": 100.0,
+      "tone_score": 90.0,
+      "engagement_score": 90.0,
+      "pause_score": 100.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/badrobot1.mp3",
+    "features": {
+      "wpm": 194.48,
+      "filler_ratio": 0.058,
+      "unique_ratio": 0.5435,
+      "complex_ratio": 0.0797,
+      "rms_energy": 0.063488,
+      "energy_variance": 0.00102624,
+      "pause_ratio": 0.0892,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0217,
+      "sentence_count": 1,
+      "avg_sentence_len": 138.0,
+      "duration_seconds": 42.58
+    },
+    "scores": {
+      "overall_score": 5.0,
+      "pacing_score": 0.0,
+      "vocabulary_score": 0.0,
+      "tone_score": 0.0,
+      "engagement_score": 0.0,
+      "pause_score": 0.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/graduation-bad.mp3",
+    "features": {
+      "wpm": 151.55,
+      "filler_ratio": 0.0613,
+      "unique_ratio": 0.5774,
+      "complex_ratio": 0.1935,
+      "rms_energy": 0.160803,
+      "energy_variance": 0.01522533,
+      "pause_ratio": 0.2196,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 310.0,
+      "duration_seconds": 122.73
+    },
+    "scores": {
+      "overall_score": 10.0,
+      "pacing_score": 5.0,
+      "vocabulary_score": 35.0,
+      "tone_score": 0.0,
+      "engagement_score": 0.0,
+      "pause_score": 15.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/bad-3.mp3",
+    "features": {
+      "wpm": 194.48,
+      "filler_ratio": 0.058,
+      "unique_ratio": 0.5435,
+      "complex_ratio": 0.0797,
+      "rms_energy": 0.063488,
+      "energy_variance": 0.00102624,
+      "pause_ratio": 0.0892,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0217,
+      "sentence_count": 1,
+      "avg_sentence_len": 138.0,
+      "duration_seconds": 42.58
+    },
+    "scores": {
+      "overall_score": 6.0,
+      "pacing_score": 0.0,
+      "vocabulary_score": 0.0,
+      "tone_score": 0.0,
+      "engagement_score": 0.0,
+      "pause_score": 1.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Residence Inn by Marriott San Marcos.m4a",
+    "features": {
+      "wpm": 112.7,
+      "filler_ratio": 0.0708,
+      "unique_ratio": 0.5752,
+      "complex_ratio": 0.0973,
+      "rms_energy": 0.017283,
+      "energy_variance": 0.0001088,
+      "pause_ratio": 0.0008,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 113.0,
+      "duration_seconds": 60.16
+    },
+    "scores": {
+      "overall_score": 10.0,
+      "pacing_score": 20.0,
+      "vocabulary_score": 5.0,
+      "tone_score": 0.0,
+      "engagement_score": 0.0,
+      "pause_score": 5.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Residence Inn by Marriott San Marcos 2.m4a",
+    "features": {
+      "wpm": 45.2,
+      "filler_ratio": 0.0265,
+      "unique_ratio": 0.5044,
+      "complex_ratio": 0.1504,
+      "rms_energy": 0.01763,
+      "energy_variance": 0.00023427,
+      "pause_ratio": 0.001,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0177,
+      "sentence_count": 1,
+      "avg_sentence_len": 113.0,
+      "duration_seconds": 150.02
+    },
+    "scores": {
+      "overall_score": 2.0,
+      "pacing_score": 1.0,
+      "vocabulary_score": 1.0,
+      "tone_score": 1.0,
+      "engagement_score": 1.0,
+      "pause_score": 1.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Residence Inn by Marriott San Marcos 3.m4a",
+    "features": {
+      "wpm": 25.64,
+      "filler_ratio": 0.0392,
+      "unique_ratio": 0.7843,
+      "complex_ratio": 0.0784,
+      "rms_energy": 0.015707,
+      "energy_variance": 0.0002765,
+      "pause_ratio": 0.0084,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0784,
+      "sentence_count": 1,
+      "avg_sentence_len": 51.0,
+      "duration_seconds": 119.36
+    },
+    "scores": {
+      "overall_score": 1.0,
+      "pacing_score": 1.0,
+      "vocabulary_score": 1.0,
+      "tone_score": 1.0,
+      "engagement_score": 1.0,
+      "pause_score": 1.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Residence Inn by Marriott San Marcos 4.m4a",
+    "features": {
+      "wpm": 158.32,
+      "filler_ratio": 0.0381,
+      "unique_ratio": 0.4731,
+      "complex_ratio": 0.1704,
+      "rms_energy": 0.024303,
+      "energy_variance": 0.00022455,
+      "pause_ratio": 0.0086,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0067,
+      "sentence_count": 1,
+      "avg_sentence_len": 446.0,
+      "duration_seconds": 169.02
+    },
+    "scores": {
+      "overall_score": 80.0,
+      "pacing_score": 80.0,
+      "vocabulary_score": 70.0,
+      "tone_score": 85.0,
+      "engagement_score": 67.0,
+      "pause_score": 80.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Residence Inn by Marriott San Marcos 5.m4a",
+    "features": {
+      "wpm": 148.58,
+      "filler_ratio": 0.0614,
+      "unique_ratio": 0.5877,
+      "complex_ratio": 0.1754,
+      "rms_energy": 0.023363,
+      "energy_variance": 0.00023138,
+      "pause_ratio": 0.013,
+      "bad_pause_ratio": 0.0476,
+      "stutter_ratio": 0.0044,
+      "sentence_count": 1,
+      "avg_sentence_len": 228.0,
+      "duration_seconds": 92.07
+    },
+    "scores": {
+      "overall_score": 70.0,
+      "pacing_score": 80.0,
+      "vocabulary_score": 50.0,
+      "tone_score": 90.0,
+      "engagement_score": 70.0,
+      "pause_score": 75.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Residence Inn by Marriott San Marcos 6.m4a",
+    "features": {
+      "wpm": 179.88,
+      "filler_ratio": 0.0585,
+      "unique_ratio": 0.4847,
+      "complex_ratio": 0.1504,
+      "rms_energy": 0.025092,
+      "energy_variance": 0.00021204,
+      "pause_ratio": 0.0033,
+      "bad_pause_ratio": 0.1034,
+      "stutter_ratio": 0.0084,
+      "sentence_count": 1,
+      "avg_sentence_len": 359.0,
+      "duration_seconds": 119.74
+    },
+    "scores": {
+      "overall_score": 90.0,
+      "pacing_score": 85.0,
+      "vocabulary_score": 85.0,
+      "tone_score": 90.0,
+      "engagement_score": 95.0,
+      "pause_score": 70.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Residence Inn by Marriott San Marcos 7.m4a",
+    "features": {
+      "wpm": 25.79,
+      "filler_ratio": 0.0811,
+      "unique_ratio": 0.8108,
+      "complex_ratio": 0.0,
+      "rms_energy": 0.012015,
+      "energy_variance": 8.264e-05,
+      "pause_ratio": 0.0006,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 37.0,
+      "duration_seconds": 86.08
+    },
+    "scores": {
+      "overall_score": 1.0,
+      "pacing_score": 1.0,
+      "vocabulary_score": 1.0,
+      "tone_score": 1.0,
+      "engagement_score": 1.0,
+      "pause_score": 1.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/WhatsApp Ptt 2026-09-12 at 23.45.44.ogg",
+    "features": {
+      "wpm": 45.68,
+      "filler_ratio": 0.0519,
+      "unique_ratio": 0.5455,
+      "complex_ratio": 0.1169,
+      "rms_energy": 0.063744,
+      "energy_variance": 0.00812348,
+      "pause_ratio": 0.3875,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.026,
+      "sentence_count": 1,
+      "avg_sentence_len": 77.0,
+      "duration_seconds": 101.13
+    },
+    "scores": {
+      "overall_score": 5.0,
+      "pacing_score": 1.0,
+      "vocabulary_score": 1.0,
+      "tone_score": 1.0,
+      "engagement_score": 1.0,
+      "pause_score": 1.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/WhatsApp Ptt 2026-09-12 at 23.48.14.ogg",
+    "features": {
+      "wpm": 70.52,
+      "filler_ratio": 0.303,
+      "unique_ratio": 0.4394,
+      "complex_ratio": 0.053,
+      "rms_energy": 0.072369,
+      "energy_variance": 0.00803622,
+      "pause_ratio": 0.4032,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0909,
+      "sentence_count": 1,
+      "avg_sentence_len": 132.0,
+      "duration_seconds": 112.31
+    },
+    "scores": {
+      "overall_score": 3.0,
+      "pacing_score": 1.0,
+      "vocabulary_score": 1.0,
+      "tone_score": 1.0,
+      "engagement_score": 1.0,
+      "pause_score": 1.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/tedGOOD.mp3",
+    "features": {
+      "wpm": 147.18,
+      "filler_ratio": 0.0529,
+      "unique_ratio": 0.4075,
+      "complex_ratio": 0.1214,
+      "rms_energy": 0.069614,
+      "energy_variance": 0.00476766,
+      "pause_ratio": 0.2636,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0024,
+      "sentence_count": 4,
+      "avg_sentence_len": 208.0,
+      "duration_seconds": 339.18
+    },
+    "scores": {
+      "overall_score": 100.0,
+      "pacing_score": 100.0,
+      "vocabulary_score": 50.0,
+      "tone_score": 100.0,
+      "engagement_score": 100.0,
+      "pause_score": 95.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/ted85.mp3",
+    "features": {
+      "wpm": 136.71,
+      "filler_ratio": 0.0115,
+      "unique_ratio": 0.5195,
+      "complex_ratio": 0.223,
+      "rms_energy": 0.037248,
+      "energy_variance": 0.00116261,
+      "pause_ratio": 0.2477,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0023,
+      "sentence_count": 1,
+      "avg_sentence_len": 435.0,
+      "duration_seconds": 190.91
+    },
+    "scores": {
+      "overall_score": 95.0,
+      "pacing_score": 100.0,
+      "vocabulary_score": 100.0,
+      "tone_score": 95.0,
+      "engagement_score": 90.0,
+      "pause_score": 90.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/60ish.ogg",
+    "features": {
+      "wpm": 130.35,
+      "filler_ratio": 0.1009,
+      "unique_ratio": 0.4732,
+      "complex_ratio": 0.1293,
+      "rms_energy": 0.087358,
+      "energy_variance": 0.00678898,
+      "pause_ratio": 0.2299,
+      "bad_pause_ratio": 0.9091,
+      "stutter_ratio": 0.0063,
+      "sentence_count": 1,
+      "avg_sentence_len": 317.0,
+      "duration_seconds": 145.91
+    },
+    "scores": {
+      "overall_score": 60.0,
+      "pacing_score": 80.0,
+      "vocabulary_score": 40.0,
+      "tone_score": 45.0,
+      "engagement_score": 55.0,
+      "pause_score": 40.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/perfect.mp3",
+    "features": {
+      "wpm": 129.98,
+      "filler_ratio": 0.0519,
+      "unique_ratio": 0.424,
+      "complex_ratio": 0.1377,
+      "rms_energy": 0.045401,
+      "energy_variance": 0.00148449,
+      "pause_ratio": 0.2077,
+      "bad_pause_ratio": 0.0328,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 559.0,
+      "duration_seconds": 258.05
+    },
+    "scores": {
+      "overall_score": 100.0,
+      "pacing_score": 100.0,
+      "vocabulary_score": 100.0,
+      "tone_score": 100.0,
+      "engagement_score": 100.0,
+      "pause_score": 100.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/average.mpeg",
+    "features": {
+      "wpm": 95.52,
+      "filler_ratio": 0.0165,
+      "unique_ratio": 0.625,
+      "complex_ratio": 0.2123,
+      "rms_energy": 0.116398,
+      "energy_variance": 0.01249888,
+      "pause_ratio": 0.294,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 424.0,
+      "duration_seconds": 266.34
+    },
+    "scores": {
+      "overall_score": 50.0,
+      "pacing_score": 69.0,
+      "vocabulary_score": 85.0,
+      "tone_score": 79.0,
+      "engagement_score": 55.0,
+      "pause_score": 30.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/90ish.mp3",
+    "features": {
+      "wpm": 154.56,
+      "filler_ratio": 0.0457,
+      "unique_ratio": 0.52,
+      "complex_ratio": 0.2143,
+      "rms_energy": 0.052337,
+      "energy_variance": 0.0015127,
+      "pause_ratio": 0.1678,
+      "bad_pause_ratio": 0.0263,
+      "stutter_ratio": 0.0143,
+      "sentence_count": 1,
+      "avg_sentence_len": 350.0,
+      "duration_seconds": 135.87
+    },
+    "scores": {
+      "overall_score": 90.0,
+      "pacing_score": 95.0,
+      "vocabulary_score": 100.0,
+      "tone_score": 99.0,
+      "engagement_score": 100.0,
+      "pause_score": 100.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/10ishbad.mp3",
+    "features": {
+      "wpm": 118.33,
+      "filler_ratio": 0.0391,
+      "unique_ratio": 0.5196,
+      "complex_ratio": 0.1423,
+      "rms_energy": 0.011384,
+      "energy_variance": 0.00099676,
+      "pause_ratio": 0.393,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.0,
+      "sentence_count": 1,
+      "avg_sentence_len": 281.0,
+      "duration_seconds": 142.48
+    },
+    "scores": {
+      "overall_score": 10.0,
+      "pacing_score": 2.0,
+      "vocabulary_score": 5.0,
+      "tone_score": 1.0,
+      "engagement_score": 0.0,
+      "pause_score": 0.0
+    }
+  },
+  {
+    "audio_path": "/Users/meidadtroper/Documents/recordings-training-data/Residence Inn by Marriott San Marcos 8.m4a",
+    "features": {
+      "wpm": 2.64,
+      "filler_ratio": 0.0,
+      "unique_ratio": 0.3333,
+      "complex_ratio": 0.0,
+      "rms_energy": 0.000769,
+      "energy_variance": 2e-06,
+      "pause_ratio": 0.0007,
+      "bad_pause_ratio": 0.0,
+      "stutter_ratio": 0.6667,
+      "sentence_count": 1,
+      "avg_sentence_len": 3.0,
+      "duration_seconds": 68.27
+    },
+    "scores": {
+      "overall_score": 0.0,
+      "pacing_score": 0.0,
+      "vocabulary_score": 0.0,
+      "tone_score": 0.0,
+      "engagement_score": 0.0,
+      "pause_score": 0.0
+    }
+  }
+]

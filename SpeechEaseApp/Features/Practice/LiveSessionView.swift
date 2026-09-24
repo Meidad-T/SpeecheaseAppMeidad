@@ -85,7 +85,7 @@ struct LiveSessionView: View {
                             .shadow(color: .black.opacity(0.6), radius: 2)
                     }
 
-                    if headCoach.isActive {
+                    if headCoach.isTracking {
                         Label("Head coach on", systemImage: "airpods.pro")
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(.white.opacity(0.7))

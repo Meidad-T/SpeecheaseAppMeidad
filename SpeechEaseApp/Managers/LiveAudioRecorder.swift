@@ -67,9 +67,13 @@ class LiveAudioRecorder: NSObject, ObservableObject, AVAudioRecorderDelegate {
         timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 guard let self = self, let rec = self.audioRecorder else { return }
-                
-                self.duration = rec.currentTime
-                
+
+                // Guard against route changes (e.g. AirPods removed) that can make
+                // currentTime report negative — keep the displayed time monotonic.
+                if rec.isRecording {
+                    self.duration = max(self.duration, rec.currentTime)
+                }
+
                 rec.updateMeters()
                 let power = rec.averagePower(forChannel: 0)
                 

@@ -28,6 +28,10 @@ final class HeadMovementCoach: ObservableObject {
     /// True while head-tracking is actually running (compatible AirPods present).
     @Published private(set) var isActive = false
 
+    /// True while motion samples are actively arriving from worn AirPods.
+    /// Goes false the moment they're removed, and back true when reinserted.
+    @Published private(set) var isTracking = false
+
     /// Drives the on-screen overlay.
     @Published private(set) var cue: Cue = .idle
 
@@ -41,6 +45,10 @@ final class HeadMovementCoach: ObservableObject {
     /// Yaw deviation (radians) from the resting facing direction that counts as
     /// "looking around". ~0.35 rad ≈ 20°.
     private let turnThreshold: Double = 0.35
+
+    /// If no motion sample arrives for this long, assume the AirPods were removed
+    /// (or taken out of the ear) and suspend coaching until samples resume.
+    private let motionStaleThreshold: TimeInterval = 2.0
 
     private let motion = CMHeadphoneMotionManager()
     private let motionQueue: OperationQueue = {
@@ -56,6 +64,7 @@ final class HeadMovementCoach: ObservableObject {
 
     // Main-only state
     private var lastMovementTime: CFTimeInterval = 0
+    private var lastSampleTime: CFTimeInterval = 0
     private var awaitingLook = false
     private var consecutiveReminders = 0
     private var checkTimer: Timer?
@@ -64,6 +73,7 @@ final class HeadMovementCoach: ObservableObject {
     private var reminderPlayer: AVAudioPlayer?
     private var goodPlayer: AVAudioPlayer?
     private let synthesizer = AVSpeechSynthesizer()
+    private var chosenVoice: AVSpeechSynthesisVoice?
 
     // MARK: - Lifecycle
 
@@ -88,7 +98,10 @@ final class HeadMovementCoach: ObservableObject {
         consecutiveReminders = 0
         cue = .idle
         lastMovementTime = CACurrentMediaTime()
+        lastSampleTime = CACurrentMediaTime()
         isActive = true
+
+        loadVoiceAndPrewarm()
 
         motion.startDeviceMotionUpdates(to: motionQueue) { [weak self] data, _ in
             guard let self, let yaw = data?.attitude.yaw else { return }
@@ -110,6 +123,7 @@ final class HeadMovementCoach: ObservableObject {
         goodPlayer?.stop()
         if synthesizer.isSpeaking { synthesizer.stopSpeaking(at: .immediate) }
         cue = .idle
+        isTracking = false
         isActive = false
     }
 
@@ -121,6 +135,8 @@ final class HeadMovementCoach: ObservableObject {
     // MARK: - Motion processing (runs on motionQueue)
 
     private func processYaw(_ yaw: Double) {
+        lastSampleTime = CACurrentMediaTime()
+
         guard let resting = restingYaw else {
             restingYaw = yaw
             return
@@ -155,6 +171,13 @@ final class HeadMovementCoach: ObservableObject {
 
     private func registerTurn() {
         lastMovementTime = CACurrentMediaTime()
+
+        // If she's mid-sentence and the speaker looks around, cut her off neatly
+        // at the next word boundary rather than letting her finish talking over them.
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .word)
+        }
+
         guard awaitingLook else { return }
         awaitingLook = false
         consecutiveReminders = 0
@@ -164,7 +187,24 @@ final class HeadMovementCoach: ObservableObject {
 
     private func checkForIdle() {
         guard isActive else { return }
-        guard CACurrentMediaTime() - lastMovementTime >= reminderInterval else { return }
+        let now = CACurrentMediaTime()
+
+        // Are motion samples still arriving? (AirPods worn and feeding data.)
+        let receiving = (now - lastSampleTime) < motionStaleThreshold
+        if isTracking != receiving { isTracking = receiving }
+
+        // AirPods removed / not in ear → suspend all demands, like auto-pressing
+        // the button off. Don't accumulate idle time so we don't nag on return.
+        guard receiving else {
+            if cue != .idle { cue = .idle }
+            if synthesizer.isSpeaking { synthesizer.stopSpeaking(at: .immediate) }
+            awaitingLook = false
+            consecutiveReminders = 0
+            lastMovementTime = now
+            return
+        }
+
+        guard now - lastMovementTime >= reminderInterval else { return }
 
         consecutiveReminders += 1
         awaitingLook = true
@@ -179,7 +219,7 @@ final class HeadMovementCoach: ObservableObject {
         }
 
         // Reset so the reminder repeats every interval until they look.
-        lastMovementTime = CACurrentMediaTime()
+        lastMovementTime = now
     }
 
     private func flashLooked() {
@@ -196,9 +236,56 @@ final class HeadMovementCoach: ObservableObject {
     private func speakReminder() {
         guard !synthesizer.isSpeaking else { return }
         let utterance = AVSpeechUtterance(string: "Make sure you are looking around to address your audience")
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.voice = chosenVoice   // best installed voice; nil → system default
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        synthesizer.speak(utterance)
+        // Speak off the main thread: the first synthesis can otherwise stall the UI
+        // while the engine/voice initialize against the active recording session.
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.synthesizer.speak(utterance)
+        }
+    }
+
+    // MARK: - Voice selection & warm-up
+
+    /// Picks the best installed voice off the main thread and warms up the TTS
+    /// engine with a silent utterance so the first spoken prompt is instant.
+    private func loadVoiceAndPrewarm() {
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let self else { return }
+            let voice = Self.preferredVoice()
+            DispatchQueue.main.async { self.chosenVoice = voice }
+
+            let warm = AVSpeechUtterance(string: " ")
+            warm.volume = 0
+            warm.voice = voice
+            self.synthesizer.speak(warm)
+        }
+    }
+
+    /// Highest-quality installed voice for the user's current language
+    /// (premium ≻ enhanced ≻ default). Returns nil to fall back to the system
+    /// default (which reflects the user's Spoken Content setting).
+    private static func preferredVoice() -> AVSpeechSynthesisVoice? {
+        let lang = AVSpeechSynthesisVoice.currentLanguageCode()
+        let prefix = String(lang.prefix(2))
+        let matches = AVSpeechSynthesisVoice.speechVoices().filter {
+            $0.language == lang || $0.language.hasPrefix(prefix)
+        }
+        func rank(_ q: AVSpeechSynthesisVoice.Quality) -> Int {
+            switch q {
+            case .premium:  return 3
+            case .enhanced: return 2
+            default:        return 1
+            }
+        }
+        // Prefer an exact language match at equal quality.
+        return matches.max {
+            let ra = rank($0.quality), rb = rank($1.quality)
+            if ra != rb { return ra < rb }
+            let ea = ($0.language == lang) ? 1 : 0
+            let eb = ($1.language == lang) ? 1 : 0
+            return ea < eb
+        }
     }
 
     /// Publishes a cue change with a light animation so views transition smoothly.

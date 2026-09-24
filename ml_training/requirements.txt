@@ -1,0 +1,7 @@
+openai-whisper
+librosa
+numpy
+scikit-learn
+coremltools
+soundfile
+pandas
