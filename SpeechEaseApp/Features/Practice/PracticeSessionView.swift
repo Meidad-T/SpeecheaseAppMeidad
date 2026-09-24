@@ -52,19 +52,23 @@ struct PracticeSessionView: View {
                 ScrollView {
                     VStack(spacing: isResultMode ? 10 : 30) {
                         if !isResultMode {
-                            HStack {
-                                ForEach(activeFoci) { focus in
-                                    Label(focus.title, systemImage: focus.icon)
-                                        .font(.caption)
-                                        .fontWeight(.bold)
-                                        .padding(.horizontal, 10)
-                                        .padding(.vertical, 6)
-                                        .background(.primary.opacity(0.05), in: Capsule())
-                                        .overlay(Capsule().stroke(.primary.opacity(0.2), lineWidth: 1))
-                                        .foregroundStyle(.primary)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(activeFoci) { focus in
+                                        Label(focus.title, systemImage: focus.icon)
+                                            .font(.caption)
+                                            .fontWeight(.bold)
+                                            .lineLimit(1)
+                                            .fixedSize(horizontal: true, vertical: false)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 6)
+                                            .background(.primary.opacity(0.05), in: Capsule())
+                                            .overlay(Capsule().stroke(.primary.opacity(0.2), lineWidth: 1))
+                                            .foregroundStyle(.primary)
+                                    }
                                 }
-                                Spacer()
                             }
+                            .scrollBounceBehavior(.basedOnSize)
                             .transition(.opacity.combined(with: .scale(scale: 0.95)))
                         }
                         

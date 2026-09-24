@@ -15,9 +15,12 @@ class CameraRecordingViewController: UIViewController, AVCaptureFileOutputRecord
     private var videoDataOutput = AVCaptureVideoDataOutput()
     
     private var overlayView: VisionOverlayView!
-    
+
     private var audioInput: AVCaptureDeviceInput?
-    
+
+    // Drives correct, device-independent video rotation (iOS 17+).
+    private var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
+
     weak var delegate: CameraControllerDelegate?
     
     override func viewDidLoad() {
@@ -63,16 +66,43 @@ class CameraRecordingViewController: UIViewController, AVCaptureFileOutputRecord
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if let connection = previewLayer?.connection {
-            if #available(iOS 17.0, *) {
-                connection.videoRotationAngle = 90
-            } else {
-                connection.videoOrientation = .portrait
+        previewLayer?.frame = view.bounds
+        applyPreviewRotation()
+        overlayView.previewLayer = previewLayer
+        view.bringSubviewToFront(overlayView)
+    }
+
+    /// Rotates the on-screen preview so it's upright, using the device-aware angle
+    /// from the rotation coordinator (falls back to nothing until it's ready).
+    private func applyPreviewRotation() {
+        guard let connection = previewLayer?.connection,
+              let angle = rotationCoordinator?.videoRotationAngleForHorizonLevelPreview,
+              connection.isVideoRotationAngleSupported(angle) else { return }
+        connection.videoRotationAngle = angle
+    }
+
+    /// Applies rotation/mirroring to the Vision data output (so overlays line up
+    /// with the preview) and the movie file output (so recordings aren't sideways).
+    private func applyOutputRotations() {
+        guard let coordinator = rotationCoordinator else { return }
+        // Match the preview angle for the Vision feed so overlay coordinates align.
+        let previewAngle = coordinator.videoRotationAngleForHorizonLevelPreview
+        let captureAngle = coordinator.videoRotationAngleForHorizonLevelCapture
+
+        if let c = videoDataOutput.connection(with: .video) {
+            if c.isVideoRotationAngleSupported(previewAngle) { c.videoRotationAngle = previewAngle }
+            if c.isVideoMirroringSupported {
+                c.automaticallyAdjustsVideoMirroring = false
+                c.isVideoMirrored = true
             }
         }
-        previewLayer?.frame = view.bounds
-        overlayView.previewLayer = previewLayer 
-        view.bringSubviewToFront(overlayView)
+        if let c = movieOutput.connection(with: .video) {
+            if c.isVideoRotationAngleSupported(captureAngle) { c.videoRotationAngle = captureAngle }
+            if c.isVideoMirroringSupported {
+                c.automaticallyAdjustsVideoMirroring = false
+                c.isVideoMirrored = true
+            }
+        }
     }
     
     func setupCamera() {
@@ -126,38 +156,33 @@ class CameraRecordingViewController: UIViewController, AVCaptureFileOutputRecord
                 videoDataOut.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoQueue"))
                 videoDataOut.alwaysDiscardsLateVideoFrames = true
                 session.addOutput(videoDataOut)
-                
-                if let connection = videoDataOut.connection(with: .video) {
-                    if #available(iOS 17.0, *) {
-                        if connection.isVideoRotationAngleSupported(90) {
-                            connection.videoRotationAngle = 90
-                        }
-                    } else {
-                        if connection.isVideoOrientationSupported {
-                            connection.videoOrientation = .portrait
-                        }
-                    }
-                    if connection.isVideoMirroringSupported {
-                        connection.isVideoMirrored = true
-                    }
-                }
+                // Rotation + mirroring are applied in applyOutputRotations() once the
+                // rotation coordinator exists (after the preview layer is created).
             }
-            
+
             session.commitConfiguration()
-            
+
             session.startRunning()
-            
+
             DispatchQueue.main.async {
                 self.captureSession = session
                 self.movieOutput = movieOut
                 self.videoDataOutput = videoDataOut
                 self.audioInput = audioIn
-                
+
                 self.previewLayer = AVCaptureVideoPreviewLayer(session: session)
                 self.previewLayer.videoGravity = .resizeAspectFill
                 self.previewLayer.frame = self.view.bounds
                 self.view.layer.insertSublayer(self.previewLayer, at: 0)
                 self.overlayView.previewLayer = self.previewLayer
+
+                // Device-aware rotation for preview, Vision feed, and recordings.
+                self.rotationCoordinator = AVCaptureDevice.RotationCoordinator(
+                    device: videoDevice,
+                    previewLayer: self.previewLayer
+                )
+                self.applyPreviewRotation()
+                self.applyOutputRotations()
             }
         }
     }

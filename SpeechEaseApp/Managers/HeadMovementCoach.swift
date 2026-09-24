@@ -247,32 +247,51 @@ final class HeadMovementCoach: ObservableObject {
 
     // MARK: - Voice selection & warm-up
 
-    /// Picks the best installed voice off the main thread and warms up the TTS
-    /// engine with a silent utterance so the first spoken prompt is instant.
+    /// Requests Personal Voice access, picks the best installed voice off the main
+    /// thread, and warms up the TTS engine so the first spoken prompt is instant.
     private func loadVoiceAndPrewarm() {
+        // Personal Voice is the user's own recorded/customized voice (iOS 17+).
+        // If granted it becomes selectable and we prefer it over stock voices.
+        AVSpeechSynthesizer.requestPersonalVoiceAuthorization { [weak self] _ in
+            self?.refreshVoiceSelection()
+        }
+        refreshVoiceSelection(prewarm: true)
+    }
+
+    private func refreshVoiceSelection(prewarm: Bool = false) {
         DispatchQueue.global(qos: .utility).async { [weak self] in
             guard let self else { return }
             let voice = Self.preferredVoice()
             DispatchQueue.main.async { self.chosenVoice = voice }
 
-            let warm = AVSpeechUtterance(string: " ")
-            warm.volume = 0
-            warm.voice = voice
-            self.synthesizer.speak(warm)
+            if prewarm {
+                let warm = AVSpeechUtterance(string: " ")
+                warm.volume = 0
+                warm.voice = voice
+                self.synthesizer.speak(warm)
+            }
         }
     }
 
-    /// Highest-quality installed voice for the user's current language
-    /// (premium ≻ enhanced ≻ default). Returns nil to fall back to the system
-    /// default (which reflects the user's Spoken Content setting).
+    /// Best available voice for the user's language:
+    /// Personal Voice ≻ premium ≻ enhanced ≻ default (novelty voices excluded).
+    /// Returns nil to fall back to the system default.
     private static func preferredVoice() -> AVSpeechSynthesisVoice? {
         let lang = AVSpeechSynthesisVoice.currentLanguageCode()
         let prefix = String(lang.prefix(2))
         let matches = AVSpeechSynthesisVoice.speechVoices().filter {
             $0.language == lang || $0.language.hasPrefix(prefix)
         }
-        // quality.rawValue: default = 1, enhanced = 2, premium = 3 (higher = better).
-        return matches.max {
+
+        // 1) A Personal Voice the user set up wins — their own customized voice.
+        if let personal = matches.first(where: { $0.voiceTraits.contains(.isPersonalVoice) }) {
+            return personal
+        }
+
+        // 2) Otherwise the highest-quality neural voice, skipping novelty voices.
+        //    quality.rawValue: default = 1, enhanced = 2, premium = 3 (higher = better).
+        let usable = matches.filter { !$0.voiceTraits.contains(.isNoveltyVoice) }
+        return usable.max {
             if $0.quality.rawValue != $1.quality.rawValue {
                 return $0.quality.rawValue < $1.quality.rawValue
             }
@@ -293,8 +312,11 @@ final class HeadMovementCoach: ObservableObject {
     private func prepareTones() {
         guard reminderPlayer == nil else { return }
 
-        // Gentle single "ding" — a nudge to look around.
-        let reminder = Self.makeChime(notes: [(freq: 880, start: 0.0, dur: 0.6, gain: 0.6)])
+        // Gentle, low descending two-note chime — a calm nudge to look around.
+        let reminder = Self.makeChime(notes: [
+            (freq: 587.33, start: 0.00, dur: 0.55, gain: 0.5),   // D5
+            (freq: 440.00, start: 0.16, dur: 0.65, gain: 0.5),   // A4 (soothing descent)
+        ])
         // Happy ascending two-note chime — positive reinforcement when they look.
         let good = Self.makeChime(notes: [
             (freq: 784,  start: 0.00, dur: 0.28, gain: 0.55),   // G5
@@ -322,14 +344,17 @@ final class HeadMovementCoach: ObservableObject {
         for note in notes {
             let startFrame = Int(note.start * sampleRate)
             let durFrames = Int(note.dur * sampleRate)
-            let decay = 5.0 / note.dur   // ~e^-5 by the end of the note
+            let decay = 5.0 / note.dur          // ~e^-5 by the end of the note
+            let attack = min(0.02, note.dur * 0.2)   // short fade-in kills the harsh click
             for n in 0..<durFrames {
                 let idx = startFrame + n
                 if idx >= frameCount { break }
                 let t = Double(n) / sampleRate
-                let env = exp(-t * decay)
+                let atk = attack > 0 ? min(1.0, t / attack) : 1.0
+                let env = atk * exp(-t * decay)
                 let w = 2 * Double.pi * note.freq * t
-                let s = sin(w) + 0.5 * sin(2 * w) + 0.25 * sin(3 * w)
+                // Softer harmonic mix (less high-frequency energy = warmer, less piercing).
+                let s = sin(w) + 0.35 * sin(2 * w) + 0.12 * sin(3 * w)
                 buffer[idx] += s * env * note.gain
             }
         }
