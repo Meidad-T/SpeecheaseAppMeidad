@@ -46,3 +46,11 @@ vendor/bundle/
 
 # macOS
 .DS_Store
+
+# Large ML model binaries (trained/exported CoreML models)
+*.mlmodel
+*.mlmodelc
+
+# Personal / large assets
+Inspo Pics/
+

@@ -1,17 +1,43 @@
 import SwiftUI
 
+// Lens-focus reveal: fades in while scaling up from 90% and sharpening blur.
+// Removal is the same in reverse — fades out while scaling down and blurring.
+private struct CameraReveal: ViewModifier, Animatable {
+    var amount: CGFloat  // 0 = hidden, 1 = visible
+
+    var animatableData: CGFloat {
+        get { amount }
+        set { amount = newValue }
+    }
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(Double(max(0, amount)))
+            .blur(radius: 18 * (1 - max(0, amount)))
+            .scaleEffect(0.88 + 0.12 * max(0, amount))
+    }
+}
+
+private extension AnyTransition {
+    static var cameraReveal: AnyTransition {
+        .modifier(active: CameraReveal(amount: 0), identity: CameraReveal(amount: 1))
+    }
+}
+
+// MARK: - LiveSessionView
 struct LiveSessionView: View {
     @Environment(\.dismiss) var dismiss
 
     var timeLimitSeconds: Double? = nil
     var onFinish: (Result<URL, Error>) -> Void
     var onCancel: () -> Void
-    
+
     @StateObject private var recorder = LiveAudioRecorder()
+    @StateObject private var headCoach = HeadMovementCoach()
+    @AppStorage("headCoachEnabled") private var headCoachEnabled = true
     @State private var isCameraEnabled = false
     @State private var isMicEnabled = true
-    
-    // Adaptive button sizing computed from screen width
+
     private var btnSize: CGFloat {
         let available = UIScreen.main.bounds.width - 40
         return min(72, (available - 24) / 4)
@@ -23,13 +49,12 @@ struct LiveSessionView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Recording area
             ZStack(alignment: .bottom) {
                 Color.black
 
                 if isCameraEnabled {
                     CameraPreview()
-                        .transition(.move(edge: .bottom))
+                        .transition(.cameraReveal)
                         .zIndex(1)
                 }
 
@@ -60,6 +85,18 @@ struct LiveSessionView: View {
                             .shadow(color: .black.opacity(0.6), radius: 2)
                     }
 
+                    if headCoach.isActive {
+                        Label("Head coach on", systemImage: "airpods.pro")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.7))
+                            .shadow(color: .black.opacity(0.6), radius: 2)
+                            .padding(.top, 4)
+                            .transition(.opacity)
+                    }
+
+                    HeadCoachOverlay(coach: headCoach)
+                        .padding(.top, 18)
+
                     Spacer()
                 }
                 .zIndex(3)
@@ -73,8 +110,10 @@ struct LiveSessionView: View {
                     topTrailingRadius: 0
                 )
             )
+            .overlay(alignment: .topTrailing) {
+                airPodsToggleButton
+            }
 
-            // Button row — lives inside safe area, always visible
             HStack(spacing: btnSpacing) {
                 Button {
                     onCancel()
@@ -87,7 +126,10 @@ struct LiveSessionView: View {
                 }
 
                 Button {
-                    withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+                    withAnimation(isCameraEnabled
+                        ? .easeIn(duration: 0.25)
+                        : .spring(response: 0.48, dampingFraction: 0.78)
+                    ) {
                         isCameraEnabled.toggle()
                     }
                 } label: {
@@ -95,11 +137,10 @@ struct LiveSessionView: View {
                         .font(.system(size: 24, weight: .semibold))
                         .frame(width: btnSize, height: btnSize)
                         .glassEffect()
+                        .contentTransition(.symbolEffect(.replace))
                 }
 
-                Button {
-                    isMicEnabled.toggle()
-                } label: {
+                Button { isMicEnabled.toggle() } label: {
                     Image(systemName: isMicEnabled ? "mic.fill" : "mic.slash.fill")
                         .font(.system(size: 24, weight: .semibold))
                         .frame(width: btnSize, height: btnSize)
@@ -107,9 +148,7 @@ struct LiveSessionView: View {
                         .contentTransition(.symbolEffect(.replace))
                 }
 
-                Button {
-                    finishSession()
-                } label: {
+                Button { finishSession() } label: {
                     Image(systemName: "checkmark")
                         .font(.system(size: 26, weight: .bold))
                         .frame(width: btnSize, height: btnSize)
@@ -121,7 +160,6 @@ struct LiveSessionView: View {
             .padding(.bottom, 10)
             .padding(.horizontal, 20)
         }
-        // Background is a separate layer — doesn't affect VStack layout at all
         .background {
             ZStack {
                 Color.black.ignoresSafeArea()
@@ -136,9 +174,14 @@ struct LiveSessionView: View {
         .onAppear {
             recorder.prepare()
             recorder.startRecording()
+            if headCoachEnabled { headCoach.start() }
         }
         .onDisappear {
             _ = recorder.stopRecording()
+            headCoach.stop()
+        }
+        .onChange(of: headCoachEnabled) { _, enabled in
+            if enabled { headCoach.start() } else { headCoach.stop() }
         }
         .onChange(of: recorder.duration) { _, newDuration in
             if let limit = timeLimitSeconds, limit > 0, newDuration >= limit {
@@ -146,11 +189,35 @@ struct LiveSessionView: View {
             }
         }
     }
-    
+
     func finishSession() {
         if let url = recorder.stopRecording() {
             onFinish(.success(url))
         }
+    }
+
+    // Top-right toggle to enable/disable the AirPods look-around coach.
+    private var airPodsToggleButton: some View {
+        Button {
+            headCoachEnabled.toggle()
+        } label: {
+            ZStack {
+                Image(systemName: "airpods.pro")
+                    .font(.system(size: 20, weight: .semibold))
+                if !headCoachEnabled {
+                    Capsule()
+                        .fill(.white)
+                        .frame(width: 2.5, height: 30)
+                        .rotationEffect(.degrees(45))
+                        .shadow(color: .black.opacity(0.5), radius: 1)
+                }
+            }
+            .foregroundStyle(.white.opacity(headCoachEnabled ? 1 : 0.55))
+            .frame(width: 48, height: 48)
+            .glassEffect()
+        }
+        .padding(.top, 16)
+        .padding(.trailing, 16)
     }
 
     var timeLimitWarningColor: Color {
@@ -176,7 +243,6 @@ extension View {
                     Circle()
                         .fill(.ultraThinMaterial)
                         .environment(\.colorScheme, .dark)
-                    
                     Circle()
                         .fill(tint)
                 }

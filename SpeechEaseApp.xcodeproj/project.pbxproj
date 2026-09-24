@@ -414,6 +414,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to analyze your body language during practice sessions.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to your microphone to analyze your speech for practice sessions.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "We use AirPods head motion to gently remind you to look around the room while you speak.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We use speech recognition to transcribe your practice sessions in real-time.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -462,6 +463,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to analyze your body language during practice sessions.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to your microphone to analyze your speech for practice sessions.";
+				INFOPLIST_KEY_NSMotionUsageDescription = "We use AirPods head motion to gently remind you to look around the room while you speak.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We use speech recognition to transcribe your practice sessions in real-time.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

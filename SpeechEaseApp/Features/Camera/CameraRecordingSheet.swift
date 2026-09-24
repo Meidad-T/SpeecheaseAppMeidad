@@ -6,6 +6,8 @@ struct CameraRecordingSheet: View {
     var onFinish: (Result<URL, Error>) -> Void
 
     @StateObject private var cameraManager = CameraRecordingManager()
+    @StateObject private var headCoach = HeadMovementCoach()
+    @AppStorage("headCoachEnabled") private var headCoachEnabled = true
 
     var externalAnalysisStatus: Binding<String>? = nil
     var timeLimitSeconds: Double? = nil
@@ -204,6 +206,10 @@ struct CameraRecordingSheet: View {
                         .frame(maxHeight: .infinity)
                         .padding(.horizontal)
                         .padding(.bottom, 20)
+                        .overlay(alignment: .top) {
+                            HeadCoachOverlay(coach: headCoach)
+                                .padding(.top, 28)
+                        }
                         
                         VStack(spacing: 20) {
                             if let recordedURL = cameraManager.recordedVideoURL, !cameraManager.isRecording {
@@ -327,6 +333,23 @@ struct CameraRecordingSheet: View {
                         dismiss()
                     }
                 }
+            }
+            .onChange(of: cameraManager.isRecording) { _, recording in
+                if recording && headCoachEnabled {
+                    headCoach.start()
+                } else {
+                    headCoach.stop()
+                }
+            }
+            .onChange(of: headCoachEnabled) { _, enabled in
+                if enabled && cameraManager.isRecording {
+                    headCoach.start()
+                } else if !enabled {
+                    headCoach.stop()
+                }
+            }
+            .onDisappear {
+                headCoach.stop()
             }
         }
     }
@@ -452,10 +475,28 @@ struct CameraRecordingSheet: View {
                     settingsRow(title: "Motion Visualizers", icon: "hand.raised.fill", color: .purple) {
                         currentSettingsPage = .motion
                     }
-                    
+
                     settingsRow(title: "Audio", icon: "mic.fill", color: .blue) {
                         currentSettingsPage = .audio
                     }
+
+                    Divider().padding(.vertical, 2)
+
+                    Toggle(isOn: $headCoachEnabled) {
+                        HStack {
+                            Image(systemName: "airpods.pro")
+                                .foregroundStyle(.white)
+                                .frame(width: 28, height: 28)
+                                .background(Color.teal)
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
+
+                            Text("Look-Around Coach")
+                                .foregroundStyle(.primary)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                        }
+                    }
+                    .tint(Color("AccentColor"))
                 }
                 
             case .motion:
