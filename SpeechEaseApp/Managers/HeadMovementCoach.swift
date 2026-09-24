@@ -271,17 +271,12 @@ final class HeadMovementCoach: ObservableObject {
         let matches = AVSpeechSynthesisVoice.speechVoices().filter {
             $0.language == lang || $0.language.hasPrefix(prefix)
         }
-        func rank(_ q: AVSpeechSynthesisVoice.Quality) -> Int {
-            switch q {
-            case .premium:  return 3
-            case .enhanced: return 2
-            default:        return 1
-            }
-        }
-        // Prefer an exact language match at equal quality.
+        // quality.rawValue: default = 1, enhanced = 2, premium = 3 (higher = better).
         return matches.max {
-            let ra = rank($0.quality), rb = rank($1.quality)
-            if ra != rb { return ra < rb }
+            if $0.quality.rawValue != $1.quality.rawValue {
+                return $0.quality.rawValue < $1.quality.rawValue
+            }
+            // Prefer an exact language match at equal quality.
             let ea = ($0.language == lang) ? 1 : 0
             let eb = ($1.language == lang) ? 1 : 0
             return ea < eb
