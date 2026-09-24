@@ -93,10 +93,10 @@ class SpeechAnalyzer: ObservableObject {
         }
         
         wordCount = Double(analysisSegments.count)
-        
+
         var wpm: Double = 0
         var pacingScore: Double = 0
-        
+
         if duration > 1 && wordCount > 0 {
             wpm = (wordCount / duration) * 60.0
             pacingScore = calculatePacingScore(wpm: wpm)
@@ -105,13 +105,37 @@ class SpeechAnalyzer: ObservableObject {
         let vocabulary = calculateVocabulary(text: analysisText)
         let engagement = calculateEngagement(text: analysisText)
         let tone = await calculateTone(audioUrl: audioFile)
-        
+
         let contextResult = performContextualAnalysis(segments: analysisSegments, text: analysisText)
         let pauseScore = contextResult.pauseScore
         var insights = contextResult.insights
+
+        // ── ML scoring (replaces rule-based scores when a trained model exists) ──
+        var mlPrediction: SpeechMLScorer.Prediction? = nil
+        if SpeechMLScorer.isAvailable,
+           let sfTranscript = transcript as? SFTranscription,
+           let features = SpeechFeatureExtractor.extract(
+               transcript: sfTranscript,
+               audioURL: audioFile,
+               duration: duration) {
+            onProgress("Running ML scorer…")
+            mlPrediction = SpeechMLScorer.predict(features: features)
+        }
+
+        let finalPacing     = mlPrediction?.pacing     ?? pacingScore
+        let finalVocabulary = mlPrediction?.vocabulary ?? vocabulary
+        let finalTone       = mlPrediction?.tone       ?? tone
+        let finalEngagement = mlPrediction?.engagement ?? engagement
+        let finalPause      = mlPrediction?.pause      ?? pauseScore
         
         var finalOverallScore = 0.0
-        let weightedScore = (pacingScore * 0.25) + (vocabulary * 0.15) + (engagement * 0.15) + (pauseScore * 0.25) + (tone * 0.2)
+        let weightedScore: Double
+        if let mlOverall = mlPrediction?.overall {
+            // Trust the trained overall score directly
+            weightedScore = mlOverall
+        } else {
+            weightedScore = (finalPacing * 0.25) + (finalVocabulary * 0.15) + (finalEngagement * 0.15) + (finalPause * 0.25) + (finalTone * 0.2)
+        }
         
         if isViolation {
             finalOverallScore = max(weightedScore - 20, 0)
@@ -129,12 +153,12 @@ class SpeechAnalyzer: ObservableObject {
         
         let metrics = SpeechMetrics(
             overallScore: finalScoreInt,
-            pacingScore: pacingScore,
+            pacingScore: finalPacing,
             pacingWPM: wpm,
-            vocabularyScore: vocabulary,
-            toneScore: tone,
-            engagementScore: engagement,
-            pauseScore: pauseScore,
+            vocabularyScore: finalVocabulary,
+            toneScore: finalTone,
+            engagementScore: finalEngagement,
+            pauseScore: finalPause,
             insights: insights
         )
         

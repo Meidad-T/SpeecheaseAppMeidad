@@ -2,127 +2,163 @@ import SwiftUI
 import Speech
 import AVFoundation
 
-// MARK: - 1. Score Header (Activity Ring Style)
+// MARK: - 1. Score Header
 struct ResultsScoreHeader: View {
     let score: Int
     let feedback: String
     @State private var animatedScore: Double = 0
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            ZStack {
-                // Background Track
-                Circle()
-                    .stroke(Color.secondary.opacity(0.1), lineWidth: 20)
-                    .frame(width: 220, height: 220)
+    @State private var ringProgress: Double = 0
 
-                // Ring
-                ActivityRing(progress: animatedScore / 100, color: scoreColor(Int(animatedScore)))
-                    .frame(width: 220, height: 220)
-                
-                // Text
-                VStack(spacing: 4) {
+    private func scoreColor(_ s: Int) -> Color {
+        s >= 90 ? .green : s >= 70 ? Color(red: 0.15, green: 0.65, blue: 1) : s >= 50 ? .orange : .red
+    }
+
+    private var gradeLabel: String {
+        score >= 90 ? "Excellent" : score >= 70 ? "Good" : score >= 50 ? "Fair" : "Keep Going"
+    }
+
+    var body: some View {
+        VStack(spacing: 18) {
+            ZStack {
+                Circle()
+                    .stroke(.primary.opacity(0.07), lineWidth: 13)
+
+                Circle()
+                    .trim(from: 0, to: ringProgress)
+                    .stroke(
+                        AngularGradient(
+                            colors: [scoreColor(score).opacity(0.5), scoreColor(score)],
+                            center: .center
+                        ),
+                        style: StrokeStyle(lineWidth: 13, lineCap: .round)
+                    )
+                    .rotationEffect(.degrees(-90))
+                    .shadow(color: scoreColor(score).opacity(0.35), radius: 8)
+                    .animation(.easeOut(duration: 1.4).delay(0.15), value: ringProgress)
+
+                VStack(spacing: 2) {
                     CountingText(
                         value: animatedScore,
-                        font: .system(size: 70, weight: .heavy, design: .rounded)
+                        font: .system(size: 54, weight: .heavy, design: .rounded)
                     )
                     .foregroundStyle(.primary)
-                    
-                    Text("Out of 100")
+
+                    Text("/ 100")
                         .font(.caption)
+                        .fontWeight(.medium)
                         .foregroundStyle(.secondary)
+                        .tracking(0.5)
                         .textCase(.uppercase)
                 }
             }
-            .padding(.top, 10)
-            
+            .frame(width: 164, height: 164)
+
+            Text(gradeLabel)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 7)
+                .background(scoreColor(score), in: Capsule())
+
             Text(feedback)
-                .font(.title3)
+                .font(.body)
                 .fontWeight(.medium)
-                .foregroundStyle(.primary.opacity(0.9))
+                .foregroundStyle(.primary.opacity(0.85))
                 .multilineTextAlignment(.center)
-                .padding(.horizontal)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .padding(.horizontal, 24)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
-        .padding(.bottom, 20)
+        .padding(.vertical, 10)
         .onAppear {
-            withAnimation(.easeOut(duration: 1.5).delay(0.2)) {
+            withAnimation(.easeOut(duration: 1.4).delay(0.15)) {
                 animatedScore = Double(score)
+                ringProgress = Double(score) / 100
             }
         }
-        .onChange(of: score) { _, newScore in
-             withAnimation(.easeOut(duration: 1.5)) {
-                animatedScore = Double(newScore)
+        .onChange(of: score) { _, new in
+            withAnimation(.easeOut(duration: 1.2)) {
+                animatedScore = Double(new)
+                ringProgress = Double(new) / 100
             }
         }
-    }
-    
-    func scoreColor(_ score: Int) -> Color {
-        if score >= 90 { return .green }
-        if score >= 70 { return .cyan }
-        if score >= 50 { return .orange }
-        return .red
     }
 }
 
-// MARK: - 2. AI Summary Card (Glass)
+// MARK: - 2. AI Summary Card
 struct ResultsAISummary: View {
     let report: SpeechReport?
     var isLoading: Bool = false
     @State private var showDetails = false
-    
-    var body: some View {
-        GlassCard {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    Image(systemName: "sparkles")
-                        .foregroundStyle(Color.purple)
-                        .scaleEffect(isLoading ? 1.1 : 1.0)
-                        .opacity(isLoading ? 0.5 : 1.0)
-                        .animation(isLoading ? .easeInOut(duration: 1.0).repeatForever(autoreverses: true) : .default, value: isLoading)
 
-                    Text(isLoading ? "Generating Insights..." : "AI Summary")
-                        .font(.headline)
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Section label
+            Text("AI Feedback".uppercased())
+                .font(.footnote)
+                .fontWeight(.semibold)
+                .foregroundStyle(.secondary)
+                .tracking(0.5)
+                .padding(.horizontal, 4)
+                .padding(.bottom, 8)
+
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 8) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.purple)
+                        .opacity(isLoading ? 0.5 : 1)
+                        .scaleEffect(isLoading ? 1.15 : 1)
+                        .animation(
+                            isLoading ? .easeInOut(duration: 0.9).repeatForever(autoreverses: true) : .default,
+                            value: isLoading
+                        )
+
+                    Text(isLoading ? "Generating insights…" : "AI Feedback")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
                         .foregroundStyle(.primary)
+
                     Spacer()
                 }
-                
+
                 if isLoading {
-                    VStack(alignment: .leading, spacing: 12) {
-                        ForEach(0..<2) { _ in
+                    VStack(alignment: .leading, spacing: 9) {
+                        ForEach(0..<3) { i in
                             Capsule()
-                                .fill(Color.primary.opacity(0.1))
-                                .frame(height: 16)
-                                .frame(maxWidth: .infinity)
+                                .fill(.primary.opacity(0.07))
+                                .frame(maxWidth: i == 2 ? 160 : .infinity)
+                                .frame(height: 12)
                         }
                     }
-                    .transition(.opacity)
                 } else {
-                    VStack(alignment: .leading, spacing: 12) {
-                        TypewriterText(text: report?.narrativeReport ?? "No analysis available.")
-                            .font(.body)
-                            .lineSpacing(4)
-                            .foregroundStyle(.secondary)
-                        
-                        if let analysis = report?.detailedAnalysis, !analysis.isEmpty {
-                            Button {
-                                showDetails = true
-                            } label: {
-                                HStack {
-                                    Text("View Detailed Analysis")
-                                        .fontWeight(.semibold)
-                                    Image(systemName: "chevron.right")
-                                }
-                                .font(.subheadline)
-                                .foregroundStyle(Color.purple)
-                                .padding(.top, 4)
+                    Text(report?.narrativeReport ?? "No analysis available.")
+                        .font(.body)
+                        .lineSpacing(5)
+                        .foregroundStyle(.primary.opacity(0.8))
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    if let analysis = report?.detailedAnalysis, !analysis.isEmpty {
+                        Button {
+                            showDetails = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text("Full breakdown")
+                                    .fontWeight(.semibold)
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
                             }
-                            .buttonStyle(.plain)
+                            .font(.subheadline)
+                            .foregroundStyle(.purple)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
             }
+            .padding(18)
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
         .sheet(isPresented: $showDetails) {
             DetailedAnalysisView(analysis: report?.detailedAnalysis ?? "")
@@ -218,14 +254,13 @@ struct DetailedAnalysisView: View {
     }
 }
 
-// MARK: - 3. Metrics Grid (Glass Rows)
+// MARK: - 3. Metrics List
 struct ResultsMetricsGrid: View {
     let report: SpeechReport
     var foci: [PracticeFocus] = []
-    
-    @State private var cards: [MetricItem] = []
-    
-    struct MetricItem: Identifiable, Hashable {
+    @State private var appeared = false
+
+    private struct MetricRow: Identifiable {
         let id = UUID()
         let title: String
         let score: Double
@@ -233,143 +268,210 @@ struct ResultsMetricsGrid: View {
         let color: Color
         var delay: Double
     }
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            ForEach(chunkedCards(), id: \.self) { row in
-                HStack(spacing: 16) {
-                    ForEach(row) { item in
-                        MetricCard(title: item.title, score: item.score, icon: item.icon, color: item.color, delay: item.delay)
-                    }
-                    if row.count == 1 {
-                        Spacer()
-                    }
-                }
-            }
-        }
-        .onAppear {
-            computeCards()
-        }
-    }
-    
-    func computeCards() {
-        var newCards: [MetricItem] = []
+
+    private var metrics: [MetricRow] {
+        var rows: [MetricRow] = []
         var delay = 0.0
-        let step = 0.1
-        
+        let step = 0.08
+
         func add(_ title: String, _ score: Double, _ icon: String, _ color: Color) {
-            newCards.append(MetricItem(title: title, score: score, icon: icon, color: color, delay: delay))
+            rows.append(MetricRow(title: title, score: score, icon: icon, color: color, delay: delay))
             delay += step
         }
-        
-        let showStandard = foci.isEmpty
-        
-        if showStandard {
-            add("Pacing", Double(report.pacingScore), "hare.fill", .cyan)
-            add("Tone", Double(report.toneScore), "waveform", .purple)
-            add("Vocabulary", Double(report.vocabularyScore), "text.book.closed.fill", .orange)
-            add("Engagement", Double(report.engagementScore), "person.wave.2.fill", .pink)
+
+        if foci.isEmpty {
+            add("Pacing", report.pacingScore, "hare.fill", .cyan)
+            add("Energy", report.toneScore, "bolt.fill", .purple)
+            add("Vocabulary", report.vocabularyScore, "text.book.closed.fill", .orange)
+            add("Engagement", report.engagementScore, "person.wave.2.fill", .pink)
+            add("Pause", report.pauseScore, "pause.fill", .mint)
         } else {
-            var addedTypes = Set<String>()
-            
+            var seen = Set<String>()
             for focus in foci {
                 switch focus {
                 case .pacing:
-                    if !addedTypes.contains("Pacing") {
-                        add("Pacing", Double(report.pacingScore), "hare.fill", .cyan)
-                        addedTypes.insert("Pacing")
-                    }
+                    if seen.insert("Pacing").inserted { add("Pacing", report.pacingScore, "hare.fill", .cyan) }
                 case .vocal:
-                    if !addedTypes.contains("Tone") {
-                        add("Tone", Double(report.toneScore), "waveform", .purple)
-                        addedTypes.insert("Tone")
-                    }
+                    if seen.insert("Energy").inserted { add("Energy", report.toneScore, "bolt.fill", .purple) }
                 case .vocab:
-                    if !addedTypes.contains("Vocabulary") {
-                        add("Vocabulary", Double(report.vocabularyScore), "text.book.closed.fill", .orange)
-                        addedTypes.insert("Vocabulary")
-                    }
+                    if seen.insert("Vocabulary").inserted { add("Vocabulary", report.vocabularyScore, "text.book.closed.fill", .orange) }
                 case .facial, .eye:
-                    if !addedTypes.contains("Eye Contact") {
-                        add("Eye Contact", report.eyeContactScore ?? 0.0, "eye.fill", .teal)
-                        addedTypes.insert("Eye Contact")
-                    }
+                    if seen.insert("Eye Contact").inserted { add("Eye Contact", report.eyeContactScore ?? 0, "eye.fill", .teal) }
                 case .body:
-                    if !addedTypes.contains("Body Language") {
-                        add("Body Language", report.bodyLanguageScore ?? 0.0, "figure.stand", .blue)
-                        addedTypes.insert("Body Language")
-                    }
+                    if seen.insert("Body Language").inserted { add("Body Language", report.bodyLanguageScore ?? 0, "figure.stand", .blue) }
                 case .interview:
-                    if !addedTypes.contains("Engagement") {
-                        add("Engagement", Double(report.engagementScore), "person.wave.2.fill", .pink)
-                        addedTypes.insert("Engagement")
-                    }
+                    if seen.insert("Engagement").inserted { add("Engagement", report.engagementScore, "person.wave.2.fill", .pink) }
                 }
             }
         }
-        
-        self.cards = newCards
+        return rows
     }
-    
-    func chunkedCards() -> [[MetricItem]] {
-        stride(from: 0, to: cards.count, by: 2).map {
-            Array(cards[$0..<min($0 + 2, cards.count)])
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Performance".uppercased())
+                .font(.footnote)
+                .fontWeight(.semibold)
+                .foregroundStyle(.secondary)
+                .tracking(0.5)
+                .padding(.horizontal, 4)
+                .padding(.bottom, 8)
+
+            VStack(spacing: 0) {
+                ForEach(Array(metrics.enumerated()), id: \.element.id) { index, row in
+                    MetricListRow(
+                        title: row.title,
+                        score: row.score,
+                        icon: row.icon,
+                        color: row.color,
+                        delay: row.delay,
+                        appeared: appeared
+                    )
+                    if index < metrics.count - 1 {
+                        Divider()
+                            .padding(.leading, 52)
+                    }
+                }
+            }
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
+        .onAppear { appeared = true }
+    }
+}
+
+private struct MetricListRow: View {
+    let title: String
+    let score: Double
+    let icon: String
+    let color: Color
+    let delay: Double
+    let appeared: Bool
+    @State private var barShown = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 10) {
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.12))
+                        .frame(width: 30, height: 30)
+                    Image(systemName: icon)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(color)
+                }
+
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.primary)
+
+                Spacer()
+
+                Text("\(Int(score))")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .monospacedDigit()
+                    .foregroundStyle(color)
+            }
+
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(.primary.opacity(0.07))
+                        .frame(height: 5)
+                    Capsule()
+                        .fill(LinearGradient(
+                            colors: [color.opacity(0.7), color],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ))
+                        .frame(width: barShown ? geo.size.width * CGFloat(score / 100) : 0, height: 5)
+                        .animation(
+                            .spring(response: 0.7, dampingFraction: 0.8).delay(delay + 0.15),
+                            value: barShown
+                        )
+                }
+            }
+            .frame(height: 5)
+            .padding(.leading, 40)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .onChange(of: appeared) { _, new in if new { barShown = true } }
+        .onAppear { if appeared { barShown = true } }
     }
 }
 
 // MARK: - 4. Insights List
 struct ResultsInsightsList: View {
     let userInsights: [SpeechInsight]
-    
+
     var body: some View {
-        GlassCard {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Top Insights")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-                
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    ForEach(Array(userInsights.prefix(4).enumerated()), id: \.element.id) { index, insight in
-                        InsightMiniCard(insight: insight)
-                            .transition(.scale.combined(with: .opacity).animation(.spring().delay(Double(index) * 0.1)))
+        let visible = Array(userInsights.prefix(5))
+
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Key Insights".uppercased())
+                .font(.footnote)
+                .fontWeight(.semibold)
+                .foregroundStyle(.secondary)
+                .tracking(0.5)
+                .padding(.horizontal, 4)
+                .padding(.bottom, 8)
+
+            VStack(spacing: 0) {
+                ForEach(Array(visible.enumerated()), id: \.element.id) { index, insight in
+                    InsightListRow(insight: insight, index: index)
+                    if index < visible.count - 1 {
+                        Divider()
+                            .padding(.leading, 52)
                     }
                 }
             }
+            .background(.regularMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
     }
 }
 
-struct InsightMiniCard: View {
+private struct InsightListRow: View {
     let insight: SpeechInsight
-    
+    let index: Int
+    @State private var appeared = false
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Image(systemName: insight.type.icon)
-                .foregroundStyle(insight.type.color)
-                .font(.title2)
-                .frame(width: 32, height: 32)
-                .background(insight.type.color.opacity(0.1))
-                .clipShape(Circle())
-            
-            VStack(alignment: .leading, spacing: 4) {
+        HStack(alignment: .top, spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(insight.type.color.opacity(0.12))
+                    .frame(width: 32, height: 32)
+                Image(systemName: insight.type.icon)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(insight.type.color)
+            }
+            .padding(.top, 1)
+
+            VStack(alignment: .leading, spacing: 3) {
                 Text(insight.title)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.primary)
-                    .lineLimit(1)
-                
+
                 Text(insight.description)
-                    .font(.caption2)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
-                    .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(3)
             }
+
+            Spacer()
         }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.primary.opacity(0.05))
-        .cornerRadius(12)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 13)
+        .opacity(appeared ? 1 : 0)
+        .offset(y: appeared ? 0 : 5)
+        .animation(.spring(response: 0.4, dampingFraction: 0.8).delay(Double(index) * 0.06), value: appeared)
+        .onAppear { appeared = true }
     }
 }
 
@@ -395,56 +497,6 @@ struct GlassLoadingView: View {
 }
 
 // MARK: - Helpers
-struct MetricCard: View {
-    let title: String
-    let score: Double
-    let icon: String
-    let color: Color
-    var delay: Double = 0.5
-    @State private var showBar = false
-    
-    var body: some View {
-        GlassCard {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: icon)
-                        .foregroundStyle(color)
-                        .font(.title3)
-                    Spacer()
-                    
-                    Text("\(Int(score))")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.primary)
-                }
-                .padding(.bottom, 4)
-                
-                Text(title)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .textCase(.uppercase)
-                
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule()
-                            .fill(Color.primary.opacity(0.1))
-                        
-                        Capsule()
-                            .fill(LinearGradient(colors: [color.opacity(0.5), color], startPoint: .leading, endPoint: .trailing))
-                            .frame(width: showBar ? geo.size.width * (score / 100) : 0)
-                    }
-                }
-                .frame(height: 6)
-            }
-        }
-        .onAppear {
-            withAnimation(.spring().delay(delay + 0.3)) {
-                showBar = true
-            }
-        }
-    }
-}
-
 struct TypewriterText: View {
     let text: String
     @State private var displayText = ""

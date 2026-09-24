@@ -42,7 +42,45 @@ An interactive practice environment where users configure custom mock interviews
 
 ---
 
-## 📁 Project Architecture (Single Responsibility Principle)
+## 🤖 ML Speech Scoring (Training Pipeline)
+
+The app ships with a trainable ML scoring system. Instead of fixed rule-based scores, you can train a personal model on your own recordings and it learns *your* definition of good speech.
+
+### How it works
+- **Mac**: Python script (`ml_training/train.py`) uses Whisper to transcribe recordings, extracts 12 audio/transcript features, and trains a GradientBoosting model on scores you provide.
+- **iPhone**: The exported `.mlmodel` files are bundled in Xcode. The app automatically uses them for scoring — and falls back to rule-based scores if no model is present.
+
+### Full instructions
+See **[`ml_training/README.md`](ml_training/README.md)** for the complete step-by-step guide.
+
+### Quick reference (run from `ml_training/` folder)
+
+```bash
+# One-time setup
+pip3 install -r requirements.txt
+brew install ffmpeg
+
+# Add a recording + score it interactively (repeat as many times as you want)
+python3 train.py add /path/to/recording.m4a
+
+# See all recordings in your training set
+python3 train.py list
+
+# Train the model (needs 5+ recordings per metric)
+python3 train.py train
+
+# → Drag output/*.mlmodel into Xcode, rebuild the app
+```
+
+### Notes
+- All training data is stored in `ml_training/training_data.json` — it accumulates across sessions.
+- Each `train` run retrains from scratch on *all* data, so adding more recordings and retraining always produces a better model.
+- Recordings score 6 dimensions independently: **pacing, vocabulary, tone, engagement, pause quality, overall**. You can skip any you don't want to rate.
+- The `.mlmodel` files in Xcode are replaced (not stacked) each time — just overwrite them and rebuild.
+
+---
+
+
 
 To keep code clean and scalable, files are divided by function:
 * `Models/`: Standard data models and schemas (e.g., `LearnTopic.swift`).

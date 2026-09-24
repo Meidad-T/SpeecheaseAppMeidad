@@ -2,56 +2,46 @@ import SwiftUI
 
 struct AnalysisResultView: View {
     let report: SpeechReport
-    var isLoading: Bool = false 
+    var isLoading: Bool = false
     var onOpenTranscript: (() -> Void)? = nil
-    
+
     @Environment(\.dismiss) var dismiss
-    @Environment(\.horizontalSizeClass) var sizeClass
-    var isPad: Bool { sizeClass == .regular }
-    
+
     var body: some View {
         ZStack {
             MeshBackground()
-            
+
             ScrollView {
-                VStack(spacing: 30) {
+                VStack(alignment: .leading, spacing: 28) {
                     ResultsScoreHeader(score: report.overallScore, feedback: report.feedback)
-                        .padding(.top, 20)
-                    
-                    VStack(alignment: .leading, spacing: 16) {
-                        ResultsAISummary(report: report, isLoading: isLoading)
-                        
-                        if !isLoading {
-                            Button {
-                                onOpenTranscript?()
-                            } label: {
-                                HStack {
-                                    Text("See Transcript")
-                                        .fontWeight(.bold)
-                                    Image(systemName: "arrow.right")
-                                }
-                                .font(.subheadline)
-                                .foregroundStyle(Color.cyan)
-                                .padding(.top, 8)
+                        .padding(.top, 6)
+
+                    ResultsMetricsGrid(report: report)
+
+                    ResultsAISummary(report: report, isLoading: isLoading)
+
+                    if !isLoading, let action = onOpenTranscript {
+                        Button(action: action) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "doc.text")
+                                    .font(.system(size: 13, weight: .semibold))
+                                Text("View Transcript")
+                                    .fontWeight(.semibold)
                             }
-                            .buttonStyle(.plain)
-                            .padding(.horizontal)
+                            .font(.subheadline)
+                            .foregroundStyle(.cyan)
                         }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 4)
                     }
-                    
-                    if !isLoading {
-                        VStack(spacing: 30) {
-                            ResultsMetricsGrid(report: report)
-                                .padding(.horizontal)
-                            
-                            ResultsInsightsList(userInsights: report.insights)
-                                .padding(.bottom, 40)
-                        }
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+
+                    if !isLoading, !report.insights.isEmpty {
+                        ResultsInsightsList(userInsights: report.insights)
                     }
                 }
-                .animation(.spring(response: 0.6, dampingFraction: 0.8), value: isLoading)
+                .padding()
                 .padding(.bottom, 40)
+                .animation(.spring(response: 0.6, dampingFraction: 0.8), value: isLoading)
             }
         }
         .navigationBarTitleDisplayMode(.inline)

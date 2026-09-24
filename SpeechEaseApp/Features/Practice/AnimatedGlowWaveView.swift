@@ -43,7 +43,7 @@ struct AnimatedGlowWaveView: View {
                     endPoint: .center
                 )
                 .ignoresSafeArea()
-                
+
                 ForEach(0..<waves.count, id: \.self) { index in
                     SingleWaveView(
                         config: waves[index],
@@ -85,13 +85,13 @@ struct SingleWaveView: View {
     var body: some View {
         let interval = screenSize.width * config.intervalMultiplier
         let baseline = screenSize.height * 0.85
-        
+
         let waveShape = SineWaveShape(
             interval: interval,
             amplitude: currentAmplitude,
             baseline: baseline + currentBaselineOffset
         )
-        
+
         ZStack {
             waveShape
                 .fill(
@@ -103,7 +103,7 @@ struct SingleWaveView: View {
                 )
                 .blur(radius: 60)
                 .offset(y: -50)
-            
+
             waveShape
                 .fill(
                     LinearGradient(
@@ -137,18 +137,18 @@ struct SingleWaveView: View {
             randomizeWaveMotion()
         }
     }
-    
+
     private func randomizeWaveMotion() {
         let randomDuration = Double.random(in: 2.5...5.0)
-        
+
         let newAmplitude = config.baseAmplitude + CGFloat.random(in: -config.amplitudeRange...config.amplitudeRange)
         let newBaselineOffset = config.baseBaselineOffset + CGFloat.random(in: -config.baselineRange...config.baselineRange)
-        
+
         withAnimation(.easeInOut(duration: randomDuration)) {
             currentAmplitude = newAmplitude
             currentBaselineOffset = newBaselineOffset
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + randomDuration * 0.9) {
             randomizeWaveMotion()
         }
@@ -159,7 +159,7 @@ struct SineWaveShape: Shape {
     var interval: CGFloat
     var amplitude: CGFloat
     var baseline: CGFloat
-    
+
     var animatableData: AnimatablePair<CGFloat, CGFloat> {
         get { AnimatablePair(amplitude, baseline) }
         set {
@@ -171,17 +171,17 @@ struct SineWaveShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         path.move(to: CGPoint(x: 0, y: baseline))
-        
+
         for i in 0...3 {
             drawWaveCycle(to: &path, startX: interval * CGFloat(i))
         }
-        
+
         path.addLine(to: CGPoint(x: interval * 4, y: rect.height))
         path.addLine(to: CGPoint(x: 0, y: rect.height))
         path.closeSubpath()
         return path
     }
-    
+
     private func drawWaveCycle(to path: inout Path, startX: CGFloat) {
         let endX = startX + interval
         let cp1 = CGPoint(x: startX + (interval * 0.35), y: baseline - amplitude)
